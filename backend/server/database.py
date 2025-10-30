@@ -89,4 +89,4 @@ def init_db() -> None:
                 'INSERT INTO model_weights (id, w_sem, w_overlap, w_jaccard, w_years, w_edu, lr, l2, updated_at) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?)',
                 (0.50, 0.18, 0.10, 0.17, 0.05, 0.10, 1e-4, _now_iso()),
             )
-            conn.commit()
+        conn.commit()

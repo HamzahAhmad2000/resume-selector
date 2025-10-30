@@ -1,11 +1,11 @@
 import { ChangeEvent, DragEvent, useCallback, useMemo, useState } from 'react'
 
-import api from '@/lib/axios'
 import { cn } from '@/lib/utils'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { useToast } from './ui/use-toast'
+import { uploadResume } from '@/api/resumes'
 
 type UploadStatus = 'pending' | 'uploading' | 'success' | 'error'
 
@@ -65,13 +65,9 @@ export const ResumeUploader = ({ disabled }: ResumeUploaderProps) => {
     for (const item of items) {
       if (item.status === 'success') continue
       setItems((prev) => prev.map((entry) => (entry.file === item.file ? { ...entry, status: 'uploading' } : entry)))
-      const formData = new FormData()
-      formData.append('file', item.file)
       try {
-        const response = await api.post('/resumes', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        })
-        const candidateId = response.data.candidate_id as number
+        const response = await uploadResume(item.file)
+        const candidateId = response.candidate_id
         setItems((prev) =>
           prev.map((entry) => (entry.file === item.file ? { ...entry, status: 'success', candidateId } : entry))
         )

@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { Rankings, RankedCandidate } from '@/components/Rankings'
+import { Rankings } from '@/components/Rankings'
 import { WeightsPanel } from '@/components/WeightsPanel'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
-import api from '@/lib/axios'
 import { useToast } from '@/components/ui/use-toast'
-import type { JobRecord } from '@/components/JobForm'
+import { fetchRankings as fetchRankingsApi } from '@/api/rankings'
+import { sendFeedback } from '@/api/feedback'
+import { fetchModelState } from '@/api/models'
+import type { JobRecord, RankedCandidate } from '@/types/api'
 
 const DEFAULT_WEIGHTS = [0.5, 0.18, 0.1, 0.17, 0.05]
 
@@ -46,9 +48,9 @@ export const RankTrainPage = ({ jobs, currentJobId, onSelectJob }: RankTrainPage
 
   const pullModel = useCallback(async () => {
     try {
-      const response = await api.get('/models')
-      setWeights(response.data.weights ?? DEFAULT_WEIGHTS)
-      setModelMeta({ lr: response.data.lr, l2: response.data.l2, updatedAt: response.data.updated_at })
+      const response = await fetchModelState()
+      setWeights(response.weights ?? DEFAULT_WEIGHTS)
+      setModelMeta({ lr: response.lr, l2: response.l2, updatedAt: response.updated_at })
     } catch (error) {
       // Silent failure keeps UI usable when backend not ready
     }
@@ -58,24 +60,17 @@ export const RankTrainPage = ({ jobs, currentJobId, onSelectJob }: RankTrainPage
     pullModel()
   }, [pullModel])
 
-  const fetchRankings = useCallback(async () => {
+  const loadRankings = useCallback(async () => {
     if (!selectedJobId) {
       toastError({ title: 'Select a job', description: 'Choose a job before fetching rankings.' })
       return
     }
     setLoading(true)
     try {
-      const response = await api.get('/rankings', {
-        params: {
-          job_id: selectedJobId,
-          k,
-          epsilon
-        }
-      })
-      const data = response.data
-      setWeights(data.weights ?? DEFAULT_WEIGHTS)
-      setCandidates(data.candidates as RankedCandidate[])
-      setShownIds((data.candidates as RankedCandidate[]).map((candidate) => candidate.candidate_id))
+      const response = await fetchRankingsApi({ job_id: selectedJobId, k, epsilon })
+      setWeights(response.weights ?? DEFAULT_WEIGHTS)
+      setCandidates(response.candidates)
+      setShownIds(response.candidates.map((candidate) => candidate.candidate_id))
     } catch (error) {
       toastError({ title: 'Rankings failed', description: 'Ensure the backend is running and resumes are ingested.' })
     } finally {
@@ -94,18 +89,18 @@ export const RankTrainPage = ({ jobs, currentJobId, onSelectJob }: RankTrainPage
     }
 
     try {
-      await api.post('/feedback', {
+      await sendFeedback({
         job_id: selectedJobId,
         shown_candidate_ids: shownIds,
         chosen_candidate_id: candidateId
       })
       toastSuccess({ title: 'Model updated', description: 'Feedback incorporated. Regenerating rankings…' })
-      await fetchRankings()
+      await loadRankings()
       await pullModel()
     } catch (error) {
       toastError({ title: 'Feedback failed', description: 'Could not update weights. Please retry.' })
     }
-  }, [fetchRankings, pullModel, selectedJobId, shownIds, toastError, toastSuccess])
+  }, [loadRankings, pullModel, selectedJobId, shownIds, toastError, toastSuccess])
 
   const jobLabel = useMemo(() => {
     if (!selectedJobId) return 'No job selected'
@@ -183,7 +178,7 @@ export const RankTrainPage = ({ jobs, currentJobId, onSelectJob }: RankTrainPage
               <div className='text-sm text-muted-foreground'>
                 Current job: <span className='font-medium text-foreground'>{jobLabel}</span>
               </div>
-              <Button disabled={!selectedJobId || loading} onClick={fetchRankings} variant='secondary'>
+              <Button disabled={!selectedJobId || loading} onClick={loadRankings} variant='secondary'>
                 {loading ? 'Fetching…' : 'Fetch Rankings'}
               </Button>
             </div>

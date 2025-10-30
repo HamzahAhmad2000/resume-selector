@@ -3,13 +3,14 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import api from '@/lib/axios'
 import { Button } from './ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
 import { Textarea } from './ui/textarea'
 import { useToast } from './ui/use-toast'
+import { createJob } from '@/api/jobs'
+import type { JobRecord } from '@/types/api'
 
 const jobSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters'),
@@ -17,12 +18,6 @@ const jobSchema = z.object({
 })
 
 type JobFormValues = z.infer<typeof jobSchema>
-
-export interface JobRecord {
-  id: number
-  title: string
-  description: string
-}
 
 interface JobFormProps {
   onCreated: (job: JobRecord) => void
@@ -39,8 +34,8 @@ export const JobForm = ({ onCreated }: JobFormProps) => {
   const onSubmit = async (values: JobFormValues) => {
     setSubmitting(true)
     try {
-      const response = await api.post('/jobs', values)
-      const id = response.data.job_id as number
+      const response = await createJob(values)
+      const id = response.job_id
       onCreated({ id, title: values.title, description: values.description })
       toastSuccess({ title: 'Job created', description: `Stored job “${values.title}” with id ${id}` })
       reset()

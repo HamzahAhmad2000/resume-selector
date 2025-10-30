@@ -14,7 +14,6 @@ def client(tmp_path, monkeypatch):
         del sys.modules[module_name]
     app_module = importlib.import_module(module_name)
     importlib.reload(app_module)
-    app_module.init_db()
     app = app_module.app
     app.testing = True
     yield app.test_client()

@@ -1,6 +1,6 @@
 # Backend Service
 
-Flask API providing resume ingestion, feature extraction, ranking, and online preference learning. The service persists to SQLite and exposes REST endpoints under port 8000.
+Flask API providing resume ingestion, feature extraction, ranking, and online preference learning. The service persists to SQLite and exposes REST endpoints under port 8000. The codebase is organised into a modular package (`backend/server`) with blueprints (`routes/`), domain services (`services/`), shared utilities (`utils/`), and an explicit application factory (`create_app`).
 
 ## Quickstart
 

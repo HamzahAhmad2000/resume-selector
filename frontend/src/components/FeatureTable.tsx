@@ -1,5 +1,5 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
-import type { RankedCandidate } from './Rankings'
+import type { RankedCandidate } from '@/types/api'
 
 export interface FeatureTableFeature {
   key: keyof Pick<RankedCandidate, 'sem_sim' | 'skill_overlap' | 'jaccard' | 'years' | 'edu'>

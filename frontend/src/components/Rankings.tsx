@@ -6,23 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
 import { FeatureTable, FeatureTableFeature } from './FeatureTable'
-
-export interface RankedCandidate {
-  candidate_id: number
-  full_name: string
-  email: string
-  phone: string
-  skills: string[]
-  years_exp: number
-  edu_level_raw: number
-  sem_sim: number
-  skill_overlap: number
-  jaccard: number
-  years: number
-  edu: number
-  score: number
-  explore: boolean
-}
+import type { RankedCandidate } from '@/types/api'
 
 interface RankingsProps {
   candidates: RankedCandidate[]

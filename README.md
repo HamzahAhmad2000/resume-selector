@@ -25,6 +25,14 @@ End-to-end MVP that ingests PDF resumes, scores them against a job description u
 │  ├─ app.py
 │  ├─ requirements.txt
 │  ├─ seed_samples.py
+│  ├─ server/
+│  │  ├─ __init__.py
+│  │  ├─ config.py
+│  │  ├─ database.py
+│  │  ├─ embeddings.py
+│  │  ├─ routes/
+│  │  ├─ services/
+│  │  └─ utils/
 │  ├─ uploads/
 │  ├─ tests/
 │  │  └─ test_api_smoke.py
@@ -40,9 +48,11 @@ End-to-end MVP that ingests PDF resumes, scores them against a job description u
    ├─ src/
    │  ├─ main.tsx
    │  ├─ App.tsx
+   │  ├─ api/
    │  ├─ lib/axios.ts
    │  ├─ components/
    │  ├─ pages/
+   │  ├─ types/
    │  └─ __tests__/
    ├─ Dockerfile
    └─ README.md

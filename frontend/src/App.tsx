@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import { type JobRecord } from './components/JobForm'
+import type { JobRecord } from './types/api'
 import { RankTrainPage } from './pages/RankTrainPage'
 import { JobsPage } from './pages/JobsPage'
 import { ResumesPage } from './pages/ResumesPage'

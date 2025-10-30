@@ -1,5 +1,6 @@
-import { JobForm, JobRecord } from '@/components/JobForm'
+import { JobForm } from '@/components/JobForm'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import type { JobRecord } from '@/types/api'
 
 interface JobsPageProps {
   onJobCreated: (job: JobRecord) => void
