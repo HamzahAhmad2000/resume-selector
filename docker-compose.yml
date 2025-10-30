@@ -1,0 +1,20 @@
+version: '3.9'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - '8000:8000'
+    environment:
+      - RESUME_SELECTOR_EMBEDDER=transformer
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./backend/db.sqlite3:/app/db.sqlite3
+  frontend:
+    build: ./frontend
+    ports:
+      - '5173:5173'
+    environment:
+      - VITE_BACKEND_URL=http://backend:8000
+    depends_on:
+      - backend
